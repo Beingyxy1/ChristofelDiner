@@ -12,12 +12,11 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 
-export default function CoursesScreen({ navigation }) {
+export default function CoursesScreen({ navigation, menu, setMenu }) {
   const [dishName, setDishName] = useState("");
   const [description, setDescription] = useState("");
   const [course, setCourse] = useState("starter");
   const [price, setPrice] = useState("");
-  const [menu, setMenu] = useState([]);
 
   const handleAddDish = () => {
     if (!dishName || !description || !price) {
@@ -66,9 +65,7 @@ export default function CoursesScreen({ navigation }) {
 
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Text style={styles.title}>Christoffel Diner</Text>
-          <Text style={styles.subtitle}>
-            Add and manage your dishes easily
-          </Text>
+          <Text style={styles.subtitle}>Add and manage your dishes easily</Text>
 
           {/* Dish Name */}
           <TextInput
@@ -133,6 +130,14 @@ export default function CoursesScreen({ navigation }) {
             </TouchableOpacity>
           )}
 
+          {/* Filter Button */}
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: "#4b0082" }]}
+            onPress={() => navigation.navigate("Filter", { menu })}
+          >
+            <Text style={styles.buttonText}>Filter by Course</Text>
+          </TouchableOpacity>
+
           {/* Menu List */}
           <Text style={styles.menuTitle}>Current Menu</Text>
           {menu.length === 0 ? (
@@ -183,15 +188,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#4b0082",
     paddingHorizontal: 12,
     paddingVertical: 6,
-    marginTop:50,
+    marginTop: 50,
     borderRadius: 20,
     zIndex: 10,
   },
-  backText: { 
-    color: "#fff", 
-    fontWeight: "bold", 
-    fontSize: 14 
-  },
+  backText: { color: "#fff", fontWeight: "bold", fontSize: 14 },
   title: {
     fontSize: 28,
     fontWeight: "bold",
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#b105a8ff",
     fontSize: 14,
-    marginTop:10,
+    marginTop: 10,
     marginBottom: 25,
   },
   input: {

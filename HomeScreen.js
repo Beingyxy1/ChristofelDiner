@@ -1,7 +1,36 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
-export default function CoursesScreen({ navigation }) {
+export default function HomeScreen({ navigation, menu }) {
+  const [totalCourses, setTotalCourses] = useState(0);
+  const [averages, setAverages] = useState({ starter: 0, main: 0, dessert: 0 });
+
+  useFocusEffect(
+    useCallback(() => {
+      setTotalCourses(menu.length);
+
+      // ✅ Calculate average prices per course
+      const courseTypes = ["starter", "main", "dessert"];
+      const newAverages = {};
+
+      courseTypes.forEach((type) => {
+        const filtered = menu.filter((dish) => dish.course === type);
+        if (filtered.length > 0) {
+          const total = filtered.reduce(
+            (sum, dish) => sum + parseFloat(dish.price || 0),
+            0
+          );
+          newAverages[type] = (total / filtered.length).toFixed(2);
+        } else {
+          newAverages[type] = 0;
+        }
+      });
+
+      setAverages(newAverages);
+    }, [menu])
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.topCurve} />
@@ -15,7 +44,7 @@ export default function CoursesScreen({ navigation }) {
       {/* Courses info */}
       <View style={styles.courseBox}>
         <Text style={styles.courseText}>Courses</Text>
-        <Text style={styles.courseNumber}>24</Text>
+        <Text style={styles.courseNumber}>{totalCourses}</Text>
       </View>
 
       {/* Image */}
@@ -25,21 +54,30 @@ export default function CoursesScreen({ navigation }) {
         resizeMode="contain"
       />
 
-      {/* Prices section */}
+      {/* Dynamic Prices Section */}
       <View style={styles.priceBox}>
         <Text style={styles.priceTitle}>Average Price per Course</Text>
         <Text style={styles.priceItem}>
-          Starters <Text style={styles.priceValue}>R57</Text>
+          Starters{" "}
+          <Text style={styles.priceValue}>
+            R{averages.starter !== 0 ? averages.starter : "-"}
+          </Text>
         </Text>
         <Text style={styles.priceItem}>
-          Mains <Text style={styles.priceValue}>R136</Text>
+          Mains{" "}
+          <Text style={styles.priceValue}>
+            R{averages.main !== 0 ? averages.main : "-"}
+          </Text>
         </Text>
         <Text style={styles.priceItem}>
-          Desserts <Text style={styles.priceValue}>R67</Text>
+          Desserts{" "}
+          <Text style={styles.priceValue}>
+            R{averages.dessert !== 0 ? averages.dessert : "-"}
+          </Text>
         </Text>
       </View>
 
-      {/* ✅ "Get Started" Button (moved to bottom) */}
+      {/* Navigation Buttons */}
       <TouchableOpacity
         style={styles.getStartedButton}
         onPress={() => navigation.navigate("Courses")}
@@ -120,8 +158,6 @@ const styles = StyleSheet.create({
     color: "#0033A0",
     fontWeight: "bold",
   },
-
-  // ✅ New "Get Started" button styling
   getStartedButton: {
     backgroundColor: "#0033A0",
     paddingVertical: 14,
@@ -129,7 +165,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     position: "absolute",
     bottom: 40,
-    marginBottom:60,
+    marginBottom: 60,
     elevation: 4,
   },
   getStartedText: {
